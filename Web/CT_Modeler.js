@@ -176,17 +176,22 @@ CT.Object.prototype = {
    // TODO
    draw : function(globalMatrix) {
       if (! globalMatrix) {
-        //console.log("matrix", trackermatrix);
+        console.log("pq", pq);
+
 	       var scene = this.getScene();
          if (this._gl != scene._gl)
 	           this.setGL(scene._gl);
-         CT.matrixCopy(scene.getViewMatrixInverse(), this._viewMatrixInverse);
-	       globalMatrix = this._viewMatrixInverse;
+           // Zhenyi
+         //CT.matrixCopy(scene.getViewMatrixInverse(), this._viewMatrixInverse);
+	       //globalMatrix = this._viewMatrixInverse;
+         globalMatrix = pq2m(pq);
+         console.log("matrix", globalMatrix);
+         // end of Zhenyi
 	       if (CT.imu.alpha != null) {
       	    this.getScene().setStereo(true);
-      	    CT.rotateX(globalMatrix, CT.imu.gamma * Math.PI / 180 + Math.PI/2);
-      	    CT.rotateZ(globalMatrix, CT.imu.beta  * Math.PI / 180            );
-      	    CT.rotateY(globalMatrix,-CT.imu.alpha * Math.PI / 180            );
+      	    // CT.rotateX(globalMatrix, CT.imu.gamma * Math.PI / 180 + Math.PI/2);
+      	    // CT.rotateZ(globalMatrix, CT.imu.beta  * Math.PI / 180            );
+      	    // CT.rotateY(globalMatrix,-CT.imu.alpha * Math.PI / 180            );
           }
       }
       CT.matrixMultiply(globalMatrix, this._matrix, this._globalMatrix);
