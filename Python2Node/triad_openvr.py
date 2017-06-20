@@ -20,11 +20,27 @@ def convert_to_euler(pose_mat):
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Quaternion
 def convert_to_quaternion(pose_mat):
-    # Per issue #2, adding a abs() so that sqrt only results in real numbers
-    r_w = math.sqrt(abs(1+pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2]))/2
-    r_x = (pose_mat[2][1]-pose_mat[1][2])/(4*r_w)
-    r_y = (pose_mat[0][2]-pose_mat[2][0])/(4*r_w)
-    r_z = (pose_mat[1][0]-pose_mat[0][1])/(4*r_w)
+    t = pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2]
+    if t > 0:
+        r_w = math.sqrt(1+t)/2
+        r_x = (pose_mat[2][1]-pose_mat[1][2])/(4*r_w)
+        r_y = (pose_mat[0][2]-pose_mat[2][0])/(4*r_w)
+        r_z = (pose_mat[1][0]-pose_mat[0][1])/(4*r_w)
+    elif pose_mat[0][0] >= pose_mat[1][1] and pose_mat[0][0] >= pose_mat[2][2]:
+        r_x = math.sqrt(1+pose_mat[0][0]-pose_mat[1][1]-pose_mat[2][2])/2
+        r_w = (pose_mat[2][1]-pose_mat[1][2])/(4*r_x)
+        r_y = (pose_mat[0][1]+pose_mat[1][0])/(4*r_x)
+        r_z = (pose_mat[2][0]+pose_mat[0][2])/(4*r_x)
+    elif pose_mat[1][1] >= pose_mat[2][2] and pose_mat[1][1] >= pose_mat[0][0]:
+        r_y = math.sqrt(1+pose_mat[1][1]-pose_mat[2][2]-pose_mat[0][0])/2
+        r_w = (pose_mat[0][2]-pose_mat[2][0])/(4*r_y)
+        r_x = (pose_mat[1][0]+pose_mat[0][1])/(4*r_y)
+        r_z = (pose_mat[2][1]+pose_mat[1][2])/(4*r_y)
+    else:
+        r_z = math.sqrt(1+pose_mat[2][2]-pose_mat[0][0]-pose_mat[1][1])/2
+        r_w = (pose_mat[1][0]-pose_mat[0][1])/(4*r_z)
+        r_x = (pose_mat[2][0]+pose_mat[0][2])/(4*r_z)
+        r_y = (pose_mat[1][2]+pose_mat[2][1])/(4*r_z)
 
     x = pose_mat[0][3]
     y = pose_mat[1][3]

@@ -17,14 +17,21 @@ server.on('message',function(msg,info){
   console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
   console.log('Data received from client : ' + msg);
   var jsonObj = JSON.parse(msg.toString());
-  var liveObj = {
-                  label: 'VT-'+jsonObj.name, 
-				  vector3s: [{x: parseFloat(jsonObj.x), y: parseFloat(jsonObj.y), z: parseFloat(jsonObj.z)}],
-				  vector4s: [{qx: parseFloat(jsonObj.qx), qy: parseFloat(jsonObj.qy), qz: parseFloat(jsonObj.qz), qw: parseFloat(jsonObj.qw)}]
+  var liveObjs = []
+  for (var key in jsonObj) {
+	if (!jsonObj.hasOwnProperty(key)) {
+	  continue;
+	}
+	var liveObj = {
+                  label: 'VT-'+jsonObj[key].id, 
+				  vector3s: [{x: parseFloat(jsonObj[key].x), y: parseFloat(jsonObj[key].y), z: parseFloat(jsonObj[key].z)}],
+				  vector4s: [{qx: parseFloat(jsonObj[key].qx), qy: parseFloat(jsonObj[key].qy), qz: parseFloat(jsonObj[key].qz), qw: parseFloat(jsonObj[key].qw)}]
                };
-  console.log('live Obj to send' + JSON.stringify(liveObj));
-  holojam.Send(holojam.BuildUpdate('Vive', [liveObj]));
-  
+    //console.log('live Obj to send' + JSON.stringify(liveObj));
+    liveObjs.push(liveObj);
+  }
+  console.log(JSON.stringify(liveObjs));
+  holojam.Send(holojam.BuildUpdate('Vive',liveObjs));
 //sending msg
 // server.send(msg,info.port,'localhost',function(error){
 //   if(error){
