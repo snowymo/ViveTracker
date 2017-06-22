@@ -1,0 +1,55 @@
+<script src="Utility.js"></script>
+<script src="CT_Modeler.js"></script>
+
+
+<body bgcolor=black>
+<canvas id='canvas1' width=1280 height=760></canvas>
+</body>
+
+<script>
+   // var root, obj, x, y, i, s = 5, scene = new CT.Scene(canvas1);
+   var root, obj, x, y, z, i, n = 11, s = 2, scene = new CT.Scene(canvas1);
+
+   scene.setLight(0, [ 1, 1, 1]);
+   scene.setLight(1, [-1,-1,-1], [.1, .05, 0]);
+   scene.add(root = new CT.Node());
+
+   obj = root.addChild(new CT.Node());
+   // for (y = -3*s ; y <= 3*s ; y += 2*s)
+   // for (x = -3*s ; x <= 3*s ; x += 2*s)
+   // for (q = -1   ; q <= 1   ; q += 2) {
+   //    obj.addChild(new CT.Node()).translate(q*4*s, x, y).rotateY(Math.PI/2);
+   //    obj.addChild(new CT.Node()).translate(x, q*4*s, y).setColor(.5, 1, 1);
+   //    obj.addChild(new CT.Node()).translate(x, y, q*4*s).setColor(1, .5,.5);
+   // }
+   for (z = -n*s ; z <= n*s ; z += 2*s)
+   for (x = -n*s ; x <= n*s ; x += 2*s)
+      obj.addChild(new CT.Node()).translate(x, 0, z).scale(s/4);
+
+   for (y = -n*s ; y <= n*s ; y += 2*s)
+   for (x = -n*s ; x <= n*s ; x += 2*s)
+      obj.addChild(new CT.Node()).translate(x, y, 0).scale(s/4);
+   for (i = 0 ; i < obj.numChildren() ; i++)
+      obj.getChild(i).addChild((new CT.Cube()).setTexture('brick.png'));
+
+   (function update() {
+  //     var i, child, m, dotMax = -1, iMax = -1, dot;
+
+  //     for (i = 0 ; i < obj.numChildren() ; i++) {
+  //        child = obj.getChild(i);
+	 // child.getChild(0).identity().scale(.2*s);
+	 // m = child.getGlobalMatrix();
+	 // dot = -m[14] / Math.sqrt(m[12] * m[12] + m[13] * m[13] + m[14] * m[14]);
+	 // if (dot > dotMax) {
+	 //    dotMax = dot;
+	 //    iMax = i;
+	 // }
+  //     }
+  //     if (iMax >= 0)
+  //        obj.getChild(iMax).getChild(0).scale(2);
+
+      root.draw();
+      setTimeout(update, 30);
+   })();
+</script>
+
