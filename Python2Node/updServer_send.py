@@ -26,9 +26,14 @@ valid_devices = ["tracker_1",
                  "tracker_9",
                  "tracker_10",
                  "tracker_11",
-                 "tracker_12"]
+                 "tracker_12",
+                 "tracking_reference_1",
+                 "tracking_reference_2",
+                 "controller_1"]
 
 UDP_IP = "127.0.0.1"
+# test web client
+#UDP_IP = "172.16.33.60"
 UDP_PORT = 10000
 MESSAGE = b"Hello, World!"
  
@@ -58,9 +63,10 @@ if interval:
             new_data['qz'] = data_[6]
 
             data[device_key] = new_data
-        
+
+        data['time'] = time.time()
         jsondata = json.dumps(data)
-        print(jsondata)
+        
         sock.sendto(jsondata.encode('utf-8'), (UDP_IP, UDP_PORT))
         
         sleep_time = interval-(time.time()-start)

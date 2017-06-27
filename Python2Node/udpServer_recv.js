@@ -1,5 +1,5 @@
 var udp = require('dgram');
-const holojam = require('holojam-node')(['relay']);
+const holojam = require('holojam-node')(['relay'],'192.168.1.126');
 // --------------------creating a udp server --------------------
 
 // creating a udp server
@@ -14,23 +14,26 @@ server.on('error',function(error){
 // emits on new datagram msg
 server.on('message',function(msg,info){
   //console.log('Data received from client : ' + msg.toString());
-  console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
-  console.log('Data received from client : ' + msg);
+  //console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
+  //console.log('Data received from client : ' + msg);
   var jsonObj = JSON.parse(msg.toString());
   var liveObjs = []
   for (var key in jsonObj) {
 	if (!jsonObj.hasOwnProperty(key)) {
 	  continue;
 	}
+	if (key == 'time') {
+		continue;
+	}
 	var liveObj = {
                   label: 'VT-'+jsonObj[key].id, 
-				  vector3s: [{x: parseFloat(jsonObj[key].x), y: parseFloat(jsonObj[key].y), z: parseFloat(jsonObj[key].z)}],
-				  vector4s: [{qx: parseFloat(jsonObj[key].qx), qy: parseFloat(jsonObj[key].qy), qz: parseFloat(jsonObj[key].qz), qw: parseFloat(jsonObj[key].qw)}]
+				  vector3s: [{x: parseFloat(jsonObj[key].x), y: parseFloat(jsonObj[key].y), z: -parseFloat(jsonObj[key].z)}],
+				  vector4s: [{x: parseFloat(jsonObj[key].qx), y: parseFloat(jsonObj[key].qy), z: -parseFloat(jsonObj[key].qz), w: -parseFloat(jsonObj[key].qw)}]
                };
     //console.log('live Obj to send' + JSON.stringify(liveObj));
     liveObjs.push(liveObj);
   }
-  console.log(JSON.stringify(liveObjs));
+  //console.log(JSON.stringify(liveObjs));
   holojam.Send(holojam.BuildUpdate('Vive',liveObjs));
 //sending msg
 // server.send(msg,info.port,'localhost',function(error){
