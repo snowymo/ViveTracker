@@ -3,7 +3,7 @@ var udp = require('dgram');
 var math3d = require('math3d');
 var Vector3 = math3d.Vector3;
 var Quaternion = math3d.Quaternion;
-const holojam = require('holojam-node')(['relay'],'192.168.1.240');
+const holojam = require('holojam-node')(['relay'],'192.168.1.100');
 // --------------------creating a udp server --------------------
 
 // creating a udp server
@@ -25,8 +25,8 @@ server.on('error',function(error){
 //     this.x = arr[0];
 //     this.y = arr[1];
 //     this.z = arr[2];
-//   }
 // };
+//   }
 
 // var Quaternion = class Quaternion {
 //   constructor(qx, qy, qz, qw) {
@@ -37,7 +37,8 @@ server.on('error',function(error){
 //   }
 // };
 
-const SOURCE1 = "192.168.1.15";
+//const SOURCE1 = "192.168.1.15";
+const SOURCE1 = "127.0.0.1";
 const SOURCE2 = "192.168.1.131";
 const LH4CALIB = "LHB-85889B70";
 
@@ -48,21 +49,21 @@ var lthsQuat1Prime = new Quaternion(0,0,0,1);
 var deltaPos = new Vector3(0,0,0);
 
 function assignLightHouse(info, jsonObj){
-  console.log(info);
+  //console.log(info);
   for (var key in jsonObj) {
     //console.log("jsonObj[key].id",jsonObj[key].id,jsonObj[key].id.includes(LH4CALIB));
     
     if(jsonObj[key].id.includes(LH4CALIB)){
-      console.log("assignLightHouse" ,info);
+      //console.log("assignLightHouse" ,info);
       if(info.includes(SOURCE1)){
         lthsPos1 = new Vector3(jsonObj[key].x, jsonObj[key].y, -jsonObj[key].z);
         lthsQuat1 = new Quaternion(jsonObj[key].qx, jsonObj[key].qy, -jsonObj[key].qz, -jsonObj[key].qw);
-        console.log("lthsPos1",lthsPos1);
+        //console.log("lthsPos1",lthsPos1);
         //return true;
       } else if(info.includes(SOURCE2)){
         lthsPos1Prime = new Vector3(jsonObj[key].x, jsonObj[key].y, -jsonObj[key].z);
         lthsQuat1Prime = new Quaternion(jsonObj[key].qx, jsonObj[key].qy, -jsonObj[key].qz, -jsonObj[key].qw);
-        console.log("lthsPos1Prime",lthsPos1Prime);
+        //console.log("lthsPos1Prime",lthsPos1Prime);
         //return true;
       }
       break;
@@ -83,15 +84,15 @@ function lightHouseCalib(info, trackerPos, trackerQuat){
   if(info.includes(SOURCE2)){
     tmpQuat = lthsQuat1.mul(lthsQuat1Prime.inverse());
     deltaPos = lthsPos1.sub( tmpQuat.mulVector3(lthsPos1Prime));
-    console.log("lthsQuat1", lthsQuat1.eulerAngles, "lthsQuat1Prime", lthsQuat1Prime.eulerAngles, 
-                "lthsPos1", lthsPos1.values, "lthsPos1Prime",lthsPos1Prime.values, 
-                "deltaPos", deltaPos.values);
+    //console.log("lthsQuat1", lthsQuat1.eulerAngles, "lthsQuat1Prime", lthsQuat1Prime.eulerAngles, 
+    //            "lthsPos1", lthsPos1.values, "lthsPos1Prime",lthsPos1Prime.values, 
+    //            "deltaPos", deltaPos.values);
     var test = deltaPos.add(  tmpQuat.mulVector3(lthsPos1Prime));
-    console.log("test",test.values);
+    //console.log("test",test.values);
 
     newPos = deltaPos.add(  tmpQuat.mulVector3(new Vector3(trackerPos.x,trackerPos.y,trackerPos.z)));
-    console.log("trackerPos", trackerPos);
-    console.log("newPos", newPos.values);
+    //console.log("trackerPos", trackerPos);
+    //console.log("newPos", newPos.values);
     newQuat = tmpQuat.mul(new Quaternion(trackerQuat.x, trackerQuat.y, trackerQuat.z, trackerQuat.w));
     //console.log(newQuat);
   }
@@ -102,13 +103,13 @@ function lightHouseCalib(info, trackerPos, trackerQuat){
 // emits on new datagram msg
 server.on('message',function(msg,info){
   //console.log('Data received from client : ' + msg.toString());
-  console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
+  //console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
   //console.log('Data received from client : ' + msg);
   var jsonObj = JSON.parse(msg.toString());
   var liveObjs = []
 
   var isSuccess = assignLightHouse(info.address, jsonObj);
-  console.log("parse light house", isSuccess, jsonObj);
+  //console.log("parse light house", isSuccess);
   //console.log("parse light house", isSuccess, lthsPos1, lthsQuat1, lthsPos1Prime, lthsQuat1Prime);
 
   for (var key in jsonObj) {
@@ -140,7 +141,7 @@ server.on('message',function(msg,info){
             vector3s: [{x: newPQ[0].x, y: newPQ[0].y, z: newPQ[0].z}],
             vector4s: [{x: newPQ[1].x, y: newPQ[1].y, z: newPQ[1].z, w: newPQ[1].w}]
         };
-        console.log('live Obj to send' + JSON.stringify(liveObj2) + "\n");
+        //console.log('live Obj to send' + JSON.stringify(liveObj2) + "\n");
         liveObjs.push(liveObj2);  
       }  
     //}
@@ -148,8 +149,10 @@ server.on('message',function(msg,info){
     
   }
   //console.log(JSON.stringify(liveObjs));
-  if(liveObjs.length > 0)
+  if(liveObjs.length > 0) {
     holojam.Send(holojam.BuildUpdate('Vive',liveObjs));
+	//console.log('sent');
+  }
 //sending msg
 // server.send(msg,info.port,'localhost',function(error){
 //   if(error){

@@ -1,5 +1,5 @@
 var udp = require('dgram');
-const holojam = require('holojam-node')(['relay'],'192.168.1.126');
+const holojam = require('holojam-node')(['relay'],'192.168.1.100');
 // --------------------creating a udp server --------------------
 
 // creating a udp server
