@@ -39,7 +39,7 @@ server.on('error',function(error){
 
 //const SOURCE1 = "192.168.1.15";
 const SOURCE1 = "127.0.0.1";
-const SOURCE2 = "192.168.1.131";
+const SOURCE2 = "192.168.1.99";
 const LH4CALIB = "LHB-85889B70";
 
 var lthsPos1 = new Vector3(0,0,0);
@@ -58,19 +58,19 @@ function assignLightHouse(info, jsonObj){
       if(info.includes(SOURCE1)){
         lthsPos1 = new Vector3(jsonObj[key].x, jsonObj[key].y, -jsonObj[key].z);
         lthsQuat1 = new Quaternion(jsonObj[key].qx, jsonObj[key].qy, -jsonObj[key].qz, -jsonObj[key].qw);
-        //console.log("lthsPos1",lthsPos1);
+        //console.log("lthsQuat1",lthsQuat1);
         //return true;
       } else if(info.includes(SOURCE2)){
         lthsPos1Prime = new Vector3(jsonObj[key].x, jsonObj[key].y, -jsonObj[key].z);
         lthsQuat1Prime = new Quaternion(jsonObj[key].qx, jsonObj[key].qy, -jsonObj[key].qz, -jsonObj[key].qw);
-        //console.log("lthsPos1Prime",lthsPos1Prime);
+        //console.log("lthsQuat1Prime",lthsQuat1Prime);
         //return true;
       }
       break;
     }
     
   }
-  if(lthsPos1.magnitude > 0 && lthsPos1Prime.magnitude > 0){
+  if(lthsQuat1.x != 0 && lthsQuat1Prime.x != 0){
     return true;
   }else{
     return false;
